@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App clima</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Nome da cidade" spellcheck="false">
+            <button><img src="imagens/Procura.png" width="45" height="45"></button>
+        </div>
+        <div class="clima">
+            <img src="imagens/Nublado.png" class="clima-icon">
+            <h1 class="Temperatura"> 18º</h1>
+            <h2 class="Cidade">Goiânia</h2>
+            <div class="details">
+                <div class="col">
+                    <img src="imagens/umidade (2).png" width="65">
+                    <div>
+                        <p class="humiddade"> 70%</p>
+                        <p>Humidade</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="imagens/Vento.png" width="100">
+                    <div>
+                        <p class="vento"> 35Km/h </p>
+                        <p>Vento</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            const chaveAPI = "e038132ec351ed66ec64e7425ed3a158";
+            const input = document.querySelector(".search input");
+            const button = document.querySelector(".search button");
+            const climaIcon = document.querySelector(".clima-icon")
+
+            async function checkWeather(cidade) {
+
+                const url = `https://api.openweathermap.org/data/2.5/weather?q=${cidade}&units=metric&appid=${chaveAPI}&lang=pt_br`;
+
+                try {
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                        throw new Error("Cidade não encontrada");
+                    }
+
+                    const data = await response.json();
+
+
+                    document.querySelector(".Cidade").innerHTML = data.name;
+                    document.querySelector(".Temperatura").innerHTML = Math.round(data.main.temp) + "°";
+                    document.querySelector(".humiddade").innerHTML = data.main.humidity + "%";
+                    document.querySelector(".vento").innerHTML = data.wind.speed + " Km/h";
+
+                    if(data.weather[0].main == "Clouds"){
+                        climaIcon.src = "imagens/Nublado.png";
+                    }
+
+                    else if (data.weather[0].main == "Clear"){
+                        climaIcon.src = "imagens/Sol.png";  
+                    }    
+
+                    else if (data.weather[0].main == "Rain"){
+                        climaIcon.src = "imagens/Chuva.png";
+                    }
+
+                    else if (data.weather[0].main == "Drizzle"){
+                        climaIcon.src = "imagens/Sol Nuvem.png";
+                    }
+                    else if (data.weather[0].main == "Mist"){
+                        climaIcon.src = "imagens/Nublado.png";                 
+                }
+ 
+                document.querySelector(".clima").style.display = "block";
+                
+
+
+
+                } catch (error) {
+                    alert("Erro: " + error.message); // Exibe um alerta se ocorrer erro na busca (ex: cidade inválida)
+                }
+            }
+
+            button.addEventListener("click", () => {
+                const cidade = input.value.trim();
+                if (cidade !== "") {
+                    checkWeather(cidade);
+                } else {
+                    alert("Por favor, digite o nome de uma cidade.");
+                }
+            });
+
+            input.addEventListener("keydown", (event) =>{
+                 if (event.key === "Enter"){
+                    button.click();
+                }
+            });
+                       
+
+        </script>
+
+
+
+
+</html>
+</body>
